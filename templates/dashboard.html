@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Health Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 text-primary mb-1">Welcome to Your Health Dashboard</h1>
+                {% if last_updated %}
+                    <p class="text-muted mb-0">Last updated: {{ last_updated }}</p>
+                {% endif %}
+            </div>
+            <a href="{{ url_for('doctor_summary') }}" class="btn btn-primary">
+                <i data-feather="printer" class="me-2"></i>Doctor Visit Summary
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card health-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-circle bg-primary-light mb-3">
+                    <i data-feather="alert-circle" class="text-primary"></i>
+                </div>
+                <h5 class="card-title">Active Conditions</h5>
+                <h2 class="text-primary mb-0">{{ conditions_count }}</h2>
+                <p class="text-muted small">Total diagnosed conditions</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card health-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-circle bg-success-light mb-3">
+                    <i data-feather="package" class="text-success"></i>
+                </div>
+                <h5 class="card-title">Current Medications</h5>
+                <h2 class="text-success mb-0">{{ current_meds_count }}</h2>
+                <p class="text-muted small">Active prescriptions</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card health-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-circle bg-info-light mb-3">
+                    <i data-feather="activity" class="text-info"></i>
+                </div>
+                <h5 class="card-title">Recent Tests</h5>
+                <h2 class="text-info mb-0">{{ recent_tests|length }}</h2>
+                <p class="text-muted small">Last 3 test results</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Test Results -->
+{% if recent_tests %}
+<div class="row">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i data-feather="activity" class="me-2"></i>Recent Test Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% for test in recent_tests %}
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-1">{{ test.name }}</h6>
+                                <span class="badge bg-{{ 'success' if test.status == 'Normal' else 'warning' }}">
+                                    {{ test.status }}
+                                </span>
+                            </div>
+                            <p class="text-muted small mb-1">{{ test.date }}</p>
+                            {% if test.result_notes %}
+                                <p class="small mb-0">{{ test.result_notes[:100] }}{% if test.result_notes|length > 100 %}...{% endif %}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-body text-center py-5">
+                <i data-feather="activity" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                <h5 class="text-muted">No Recent Test Results</h5>
+                <p class="text-muted">Your recent test results will appear here.</p>
+                <a href="{{ url_for('tests') }}" class="btn btn-primary">Add Test Result</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i data-feather="zap" class="me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="{{ url_for('medications') }}" class="btn btn-outline-primary w-100">
+                            <i data-feather="package" class="me-2"></i>Add Medication
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('vitals') }}" class="btn btn-outline-primary w-100">
+                            <i data-feather="trending-up" class="me-2"></i>Record Vitals
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('tests') }}" class="btn btn-outline-primary w-100">
+                            <i data-feather="activity" class="me-2"></i>Add Test Result
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('notebook') }}" class="btn btn-outline-primary w-100">
+                            <i data-feather="book" class="me-2"></i>Update Notebook
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Re-initialize feather icons after content loads
+    document.addEventListener('DOMContentLoaded', function() {
+        feather.replace();
+    });
+</script>
+{% endblock %}

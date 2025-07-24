@@ -1,0 +1,22 @@
+{
+  "profile": {
+    "conditions": [],
+    "allergies": [],
+    "family_history": [],
+    "immunizations": [],
+    "events": []
+  },
+  "medications": {
+    "current": [],
+    "past": []
+  },
+  "tests": [],
+  "vitals": [],
+  "documents": [],
+  "notebook": {
+    "questions": [],
+    "symptoms": [],
+    "journal": []
+  },
+  "last_updated": "2025-01-24T00:00:00"
+}

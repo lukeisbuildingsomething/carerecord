@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Visit Summary - Health Tracker{% endblock %}
+
+{% block content %}
+<div class="row no-print mb-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 text-primary mb-0">Doctor Visit Summary</h1>
+            <button class="btn btn-primary" onclick="window.print()">
+                <i data-feather="printer" class="me-2"></i>Print Summary
+            </button>
+        </div>
+        <p class="text-muted">Generated on {{ generated_date }}</p>
+    </div>
+</div>
+
+<div class="print-content">
+    <!-- Header for Print -->
+    <div class="print-only mb-4">
+        <h1 class="h2 text-center mb-1">Health Summary</h1>
+        <p class="text-center text-muted">Generated on {{ generated_date }}</p>
+        <hr>
+    </div>
+
+    <!-- Current Medications -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card health-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="package" class="me-2"></i>Current Medications
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if current_meds %}
+                        <div class="row g-3">
+                            {% for med in current_meds %}
+                            <div class="col-md-6">
+                                <div class="border-start border-primary border-3 ps-3">
+                                    <h6 class="mb-1">{{ med.name }}</h6>
+                                    <p class="text-muted small mb-1"><strong>Dose:</strong> {{ med.dose }}</p>
+                                    <p class="text-muted small mb-1"><strong>Purpose:</strong> {{ med.purpose }}</p>
+                                    {% if med.prescribed_by %}
+                                        <p class="text-muted small mb-1"><strong>Prescribed by:</strong> {{ med.prescribed_by }}</p>
+                                    {% endif %}
+                                    <p class="text-muted small mb-0"><strong>Started:</strong> {{ med.start_date }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No current medications recorded.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Conditions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card health-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="alert-circle" class="me-2"></i>Active Conditions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if active_conditions %}
+                        <div class="row g-3">
+                            {% for condition in active_conditions %}
+                            <div class="col-md-6">
+                                <div class="border-start border-warning border-3 ps-3">
+                                    <h6 class="mb-1">{{ condition.name }}</h6>
+                                    {% if condition.icd_code %}
+                                        <span class="badge bg-secondary mb-1">{{ condition.icd_code }}</span>
+                                    {% endif %}
+                                    <p class="text-muted small mb-1"><strong>Diagnosed:</strong> {{ condition.date_diagnosed }}</p>
+                                    {% if condition.notes %}
+                                        <p class="small mb-0">{{ condition.notes }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No active conditions recorded.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Test Results -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card health-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="activity" class="me-2"></i>Recent Test Results (Last 3)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_tests %}
+                        {% for test in recent_tests %}
+                        <div class="border-start border-info border-3 ps-3 {% if not loop.last %}mb-3{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="mb-0">{{ test.name }}</h6>
+                                <span class="badge bg-{{ 'success' if test.status == 'Normal' else 'warning' if test.status == 'Abnormal' else 'secondary' }}">
+                                    {{ test.status }}
+                                </span>
+                            </div>
+                            <p class="text-muted small mb-1"><strong>Date:</strong> {{ test.date }}</p>
+                            {% if test.ordered_by %}
+                                <p class="text-muted small mb-1"><strong>Ordered by:</strong> {{ test.ordered_by }}</p>
+                            {% endif %}
+                            {% if test.result_notes %}
+                                <p class="small mb-0"><strong>Results:</strong> {{ test.result_notes }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted mb-0">No recent test results recorded.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions for Doctor -->
+    {% if recent_questions %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card health-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="help-circle" class="me-2"></i>Questions for Doctor
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        {% for question in recent_questions %}
+                        <li class="mb-2">
+                            <i data-feather="chevron-right" class="me-2 text-primary" style="width: 16px; height: 16px;"></i>
+                            {{ question.content }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Symptoms -->
+    {% if recent_symptoms %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card health-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="thermometer" class="me-2"></i>Recent Symptoms
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for symptom in recent_symptoms %}
+                    <div class="border-start border-warning border-3 ps-3 {% if not loop.last %}mb-3{% endif %}">
+                        <p class="mb-1">{{ symptom.content }}</p>
+                        <small class="text-muted">{{ symptom.date }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Journal Entries -->
+    {% if recent_journal %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card health-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="edit" class="me-2"></i>Recent Health Notes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for entry in recent_journal %}
+                    <div class="border-start border-success border-3 ps-3 {% if not loop.last %}mb-3{% endif %}">
+                        {% if entry.title %}
+                            <h6 class="mb-1">{{ entry.title }}</h6>
+                        {% endif %}
+                        <p class="mb-1">{{ entry.content }}</p>
+                        <small class="text-muted">{{ entry.date }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer for Print -->
+    <div class="print-only mt-5">
+        <hr>
+        <p class="text-center text-muted small">
+            This summary was generated from my personal health records on {{ generated_date }}
+        </p>
+    </div>
+</div>
+
+<style>
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        margin-bottom: 1rem !important;
+        page-break-inside: avoid;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa !important;
+        color: #000 !important;
+        border-bottom: 1px solid #000 !important;
+    }
+    
+    .badge {
+        border: 1px solid #000 !important;
+    }
+    
+    .border-primary {
+        border-color: #000 !important;
+    }
+    
+    .border-warning {
+        border-color: #666 !important;
+    }
+    
+    .border-info {
+        border-color: #333 !important;
+    }
+    
+    .border-success {
+        border-color: #000 !important;
+    }
+    
+    body {
+        font-size: 12px !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        color: #000 !important;
+    }
+}
+
+.print-only {
+    display: none;
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        feather.replace();
+    });
+</script>
+{% endblock %}

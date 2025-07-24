@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Health Notebook - Health Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 text-primary mb-4">
+            <i data-feather="book" class="me-2"></i>Health Notebook
+        </h1>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="row mb-4">
+    <div class="col-12">
+        <ul class="nav nav-pills nav-fill" id="notebookTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="questions-tab" data-bs-toggle="pill" data-bs-target="#questions" type="button" role="tab">
+                    <i data-feather="help-circle" class="me-2"></i>Questions for Doctor
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="symptoms-tab" data-bs-toggle="pill" data-bs-target="#symptoms" type="button" role="tab">
+                    <i data-feather="thermometer" class="me-2"></i>Symptoms
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="journal-tab" data-bs-toggle="pill" data-bs-target="#journal" type="button" role="tab">
+                    <i data-feather="edit" class="me-2"></i>Health Journal
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="tab-content" id="notebookTabsContent">
+    <!-- Questions Tab -->
+    <div class="tab-pane fade show active" id="questions" role="tabpanel">
+        <div class="row">
+            <div class="col-12">
+                <div class="card health-card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Questions for Doctor</h5>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+                            <i data-feather="plus" class="me-1"></i>Add Question
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        {% if notebook.questions %}
+                            <div class="list-group list-group-flush">
+                                {% for question in notebook.questions|reverse %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <p class="mb-1">{{ question.content }}</p>
+                                            <small class="text-muted">{{ question.date }}</small>
+                                        </div>
+                                        <i data-feather="help-circle" class="text-primary ms-2" style="width: 16px; height: 16px;"></i>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i data-feather="help-circle" class="text-muted mb-2" style="width: 32px; height: 32px;"></i>
+                                <p class="text-muted">No questions recorded yet. Add questions you want to ask your doctor.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Symptoms Tab -->
+    <div class="tab-pane fade" id="symptoms" role="tabpanel">
+        <div class="row">
+            <div class="col-12">
+                <div class="card health-card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Symptom Tracking</h5>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addSymptomModal">
+                            <i data-feather="plus" class="me-1"></i>Add Symptom
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        {% if notebook.symptoms %}
+                            <div class="list-group list-group-flush">
+                                {% for symptom in notebook.symptoms|reverse %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <p class="mb-1">{{ symptom.content }}</p>
+                                            <small class="text-muted">{{ symptom.date }}</small>
+                                        </div>
+                                        <i data-feather="thermometer" class="text-warning ms-2" style="width: 16px; height: 16px;"></i>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i data-feather="thermometer" class="text-muted mb-2" style="width: 32px; height: 32px;"></i>
+                                <p class="text-muted">No symptoms recorded yet. Track symptoms as they occur.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Tab -->
+    <div class="tab-pane fade" id="journal" role="tabpanel">
+        <div class="row">
+            <div class="col-12">
+                <div class="card health-card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Health Journal</h5>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addJournalModal">
+                            <i data-feather="plus" class="me-1"></i>Add Entry
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        {% if notebook.journal %}
+                            {% for entry in notebook.journal|reverse %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title mb-0">{{ entry.title or 'Journal Entry' }}</h6>
+                                        <small class="text-muted">{{ entry.date }}</small>
+                                    </div>
+                                    <p class="card-text">{{ entry.content }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i data-feather="edit" class="text-muted mb-2" style="width: 32px; height: 32px;"></i>
+                                <p class="text-muted">No journal entries yet. Record your health experiences and thoughts.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Question Modal -->
+<div class="modal fade" id="addQuestionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_notebook_entry') }}">
+                <input type="hidden" name="type" value="questions">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Question for Doctor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Question *</label>
+                        <textarea class="form-control" name="content" rows="3" required placeholder="What would you like to ask your doctor?"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Symptom Modal -->
+<div class="modal fade" id="addSymptomModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_notebook_entry') }}">
+                <input type="hidden" name="type" value="symptoms">
+                <div class="modal-header">
+                    <h5 class="modal-title">Record Symptom</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Symptom Description *</label>
+                        <textarea class="form-control" name="content" rows="4" required placeholder="Describe the symptom, severity, duration, triggers, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Record Symptom</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Journal Modal -->
+<div class="modal fade" id="addJournalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_notebook_entry') }}">
+                <input type="hidden" name="type" value="journal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Journal Entry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" placeholder="Optional title for this entry">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Entry *</label>
+                        <textarea class="form-control" name="content" rows="5" required placeholder="Write about your health experience, how you're feeling, observations, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        feather.replace();
+        
+        // Re-initialize feather icons when tabs change
+        document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function() {
+                feather.replace();
+            });
+        });
+    });
+</script>
+{% endblock %}

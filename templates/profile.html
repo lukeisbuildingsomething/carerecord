@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Health Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 text-primary mb-4">
+            <i data-feather="user" class="me-2"></i>Health Profile
+        </h1>
+    </div>
+</div>
+
+<!-- Conditions Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i data-feather="alert-circle" class="me-2"></i>Conditions & Diagnoses
+                </h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addConditionModal">
+                    <i data-feather="plus" class="me-1"></i>Add Condition
+                </button>
+            </div>
+            <div class="card-body">
+                {% if profile.conditions %}
+                    <div class="row g-3">
+                        {% for condition in profile.conditions %}
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <h6 class="mb-1">{{ condition.name }}</h6>
+                                {% if condition.icd_code %}
+                                    <span class="badge bg-secondary mb-2">{{ condition.icd_code }}</span>
+                                {% endif %}
+                                <p class="text-muted small mb-1">Diagnosed: {{ condition.date_diagnosed }}</p>
+                                {% if condition.notes %}
+                                    <p class="small mb-0">{{ condition.notes }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i data-feather="alert-circle" class="text-muted mb-2" style="width: 32px; height: 32px;"></i>
+                        <p class="text-muted">No conditions recorded yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Allergies Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i data-feather="shield-off" class="me-2"></i>Allergies
+                </h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addAllergyModal">
+                    <i data-feather="plus" class="me-1"></i>Add Allergy
+                </button>
+            </div>
+            <div class="card-body">
+                {% if profile.allergies %}
+                    <div class="row g-3">
+                        {% for allergy in profile.allergies %}
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <h6 class="mb-1">{{ allergy.allergen }}</h6>
+                                <span class="badge bg-{{ 'danger' if allergy.severity == 'Severe' else 'warning' if allergy.severity == 'Moderate' else 'info' }} mb-2">
+                                    {{ allergy.severity }}
+                                </span>
+                                <p class="small mb-0">{{ allergy.reaction }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i data-feather="shield-off" class="text-muted mb-2" style="width: 32px; height: 32px;"></i>
+                        <p class="text-muted">No allergies recorded yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Family History Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i data-feather="users" class="me-2"></i>Family History
+                </h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addFamilyHistoryModal">
+                    <i data-feather="plus" class="me-1"></i>Add Entry
+                </button>
+            </div>
+            <div class="card-body">
+                {% if profile.family_history %}
+                    <div class="row g-3">
+                        {% for history in profile.family_history %}
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <h6 class="mb-1">{{ history.condition }}</h6>
+                                <p class="text-muted small mb-1">{{ history.relative }}</p>
+                                {% if history.age_at_diagnosis %}
+                                    <p class="text-muted small mb-1">Age at diagnosis: {{ history.age_at_diagnosis }}</p>
+                                {% endif %}
+                                {% if history.notes %}
+                                    <p class="small mb-0">{{ history.notes }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i data-feather="users" class="text-muted mb-2" style="width: 32px; height: 32px;"></i>
+                        <p class="text-muted">No family history recorded yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Immunizations Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i data-feather="shield" class="me-2"></i>Immunization Records
+                </h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addImmunizationModal">
+                    <i data-feather="plus" class="me-1"></i>Add Immunization
+                </button>
+            </div>
+            <div class="card-body">
+                {% if profile.immunizations %}
+                    <div class="row g-3">
+                        {% for immunization in profile.immunizations %}
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <h6 class="mb-1">{{ immunization.vaccine }}</h6>
+                                <p class="text-muted small mb-1">Date: {{ immunization.date }}</p>
+                                {% if immunization.provider %}
+                                    <p class="text-muted small mb-1">Provider: {{ immunization.provider }}</p>
+                                {% endif %}
+                                {% if immunization.lot_number %}
+                                    <p class="small mb-0">Lot: {{ immunization.lot_number }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i data-feather="shield" class="text-muted mb-2" style="width: 32px; height: 32px;"></i>
+                        <p class="text-muted">No immunizations recorded yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Condition Modal -->
+<div class="modal fade" id="addConditionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_condition') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Condition</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Condition Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ICD Code</label>
+                        <input type="text" class="form-control" name="icd_code">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date Diagnosed *</label>
+                        <input type="date" class="form-control" name="date_diagnosed" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Condition</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Allergy Modal -->
+<div class="modal fade" id="addAllergyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_allergy') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Allergy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Allergen *</label>
+                        <input type="text" class="form-control" name="allergen" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reaction *</label>
+                        <input type="text" class="form-control" name="reaction" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Severity *</label>
+                        <select class="form-select" name="severity" required>
+                            <option value="">Select severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Allergy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Family History Modal -->
+<div class="modal fade" id="addFamilyHistoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_family_history') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Family History</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Relative *</label>
+                        <input type="text" class="form-control" name="relative" required placeholder="e.g., Mother, Father, Grandfather">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Condition *</label>
+                        <input type="text" class="form-control" name="condition" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Age at Diagnosis</label>
+                        <input type="text" class="form-control" name="age_at_diagnosis">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Immunization Modal -->
+<div class="modal fade" id="addImmunizationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_immunization') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Immunization</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Vaccine *</label>
+                        <input type="text" class="form-control" name="vaccine" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date *</label>
+                        <input type="date" class="form-control" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Healthcare Provider</label>
+                        <input type="text" class="form-control" name="provider">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Lot Number</label>
+                        <input type="text" class="form-control" name="lot_number">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Immunization</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        feather.replace();
+    });
+</script>
+{% endblock %}

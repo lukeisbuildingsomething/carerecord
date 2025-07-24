@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Medications - Health Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 text-primary mb-0">
+                <i data-feather="package" class="me-2"></i>Medications
+            </h1>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMedicationModal">
+                <i data-feather="plus" class="me-2"></i>Add Medication
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Current Medications -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i data-feather="check-circle" class="me-2 text-success"></i>Current Medications
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if medications.current %}
+                    <div class="row g-3">
+                        {% for med in medications.current %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="border rounded p-3 h-100 position-relative">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-1">{{ med.name }}</h6>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                            <i data-feather="more-horizontal"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ url_for('move_medication', index=loop.index0, from_type='current', to_type='past') }}">
+                                                    <i data-feather="archive" class="me-2"></i>Move to Past
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p class="text-muted small mb-1"><strong>Dose:</strong> {{ med.dose }}</p>
+                                <p class="text-muted small mb-1"><strong>Purpose:</strong> {{ med.purpose }}</p>
+                                {% if med.prescribed_by %}
+                                    <p class="text-muted small mb-1"><strong>Prescribed by:</strong> {{ med.prescribed_by }}</p>
+                                {% endif %}
+                                <p class="text-muted small mb-1"><strong>Started:</strong> {{ med.start_date }}</p>
+                                {% if med.notes %}
+                                    <p class="small mb-0"><strong>Notes:</strong> {{ med.notes }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i data-feather="package" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                        <h5 class="text-muted">No Current Medications</h5>
+                        <p class="text-muted">Your current medications will appear here.</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMedicationModal">
+                            Add Your First Medication
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Past Medications -->
+<div class="row">
+    <div class="col-12">
+        <div class="card health-card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i data-feather="archive" class="me-2 text-secondary"></i>Past Medications
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if medications.past %}
+                    <div class="row g-3">
+                        {% for med in medications.past %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="border rounded p-3 h-100 position-relative bg-light">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-1">{{ med.name }}</h6>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                            <i data-feather="more-horizontal"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ url_for('move_medication', index=loop.index0, from_type='past', to_type='current') }}">
+                                                    <i data-feather="rotate-ccw" class="me-2"></i>Move to Current
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p class="text-muted small mb-1"><strong>Dose:</strong> {{ med.dose }}</p>
+                                <p class="text-muted small mb-1"><strong>Purpose:</strong> {{ med.purpose }}</p>
+                                {% if med.prescribed_by %}
+                                    <p class="text-muted small mb-1"><strong>Prescribed by:</strong> {{ med.prescribed_by }}</p>
+                                {% endif %}
+                                <p class="text-muted small mb-1"><strong>Started:</strong> {{ med.start_date }}</p>
+                                {% if med.end_date %}
+                                    <p class="text-muted small mb-1"><strong>Ended:</strong> {{ med.end_date }}</p>
+                                {% endif %}
+                                {% if med.notes %}
+                                    <p class="small mb-0"><strong>Notes:</strong> {{ med.notes }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i data-feather="archive" class="text-muted mb-2" style="width: 32px; height: 32px;"></i>
+                        <p class="text-muted">No past medications recorded yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Medication Modal -->
+<div class="modal fade" id="addMedicationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_medication') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Medication</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Medication Name *</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Dose *</label>
+                                <input type="text" class="form-control" name="dose" required placeholder="e.g., 10mg twice daily">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Purpose *</label>
+                        <input type="text" class="form-control" name="purpose" required placeholder="What is this medication for?">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Prescribed By</label>
+                                <input type="text" class="form-control" name="prescribed_by" placeholder="Doctor's name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Start Date *</label>
+                                <input type="date" class="form-control" name="start_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Status *</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="type" value="current" id="statusCurrent" checked>
+                            <label class="form-check-label" for="statusCurrent">
+                                Currently Taking
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="type" value="past" id="statusPast">
+                            <label class="form-check-label" for="statusPast">
+                                No Longer Taking
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="endDateField" class="mb-3" style="display: none;">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-control" name="end_date">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3" placeholder="Additional notes about this medication"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Medication</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        feather.replace();
+        
+        // Show/hide end date field based on medication status
+        const statusRadios = document.querySelectorAll('input[name="type"]');
+        const endDateField = document.getElementById('endDateField');
+        
+        statusRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'past') {
+                    endDateField.style.display = 'block';
+                } else {
+                    endDateField.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

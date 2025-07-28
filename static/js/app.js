@@ -9,6 +9,101 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Active navigation state management
+    function setActiveNavigation() {
+        var currentPath = window.location.pathname;
+        var navLinks = document.querySelectorAll('.main-nav .nav-link:not(.dropdown-toggle)');
+        var dropdownItems = document.querySelectorAll('.main-nav .dropdown-item');
+        
+        // Remove all active classes
+        navLinks.forEach(function(link) {
+            link.classList.remove('active');
+        });
+        
+        // Check dropdown items first
+        dropdownItems.forEach(function(item) {
+            var href = item.getAttribute('href');
+            if (href && currentPath === href) {
+                // Add active class to dropdown parent
+                var dropdown = item.closest('.dropdown');
+                if (dropdown) {
+                    var dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+                    if (dropdownToggle) {
+                        dropdownToggle.classList.add('active');
+                    }
+                }
+                return;
+            }
+        });
+        
+        // Check main nav links
+        navLinks.forEach(function(link) {
+            var href = link.getAttribute('href');
+            if (href && currentPath === href) {
+                link.classList.add('active');
+            }
+        });
+    }
+    
+    // Set active navigation on page load
+    setActiveNavigation();
+
+    // Enhanced dropdown behavior
+    var dropdowns = document.querySelectorAll('.main-nav .dropdown');
+    dropdowns.forEach(function(dropdown) {
+        var toggle = dropdown.querySelector('.dropdown-toggle');
+        var menu = dropdown.querySelector('.dropdown-menu');
+        
+        // Add hover effects for desktop
+        if (window.innerWidth > 991) {
+            dropdown.addEventListener('mouseenter', function() {
+                toggle.classList.add('show');
+                menu.classList.add('show');
+                toggle.setAttribute('aria-expanded', 'true');
+            });
+            
+            dropdown.addEventListener('mouseleave', function() {
+                toggle.classList.remove('show');
+                menu.classList.remove('show');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
+
+    // Smooth scroll for navigation links
+    var navLinks = document.querySelectorAll('.main-nav a[href^="#"]');
+    navLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            var targetId = this.getAttribute('href');
+            var targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                e.preventDefault();
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Scroll effects for navigation
+    let lastScrollTop = 0;
+    const mainNav = document.querySelector('.main-nav');
+    
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Add scrolled class for enhanced shadow
+        if (scrollTop > 10) {
+            mainNav.classList.add('scrolled');
+        } else {
+            mainNav.classList.remove('scrolled');
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+
     // Auto-focus first input in modals
     var modals = document.querySelectorAll('.modal');
     modals.forEach(function(modal) {

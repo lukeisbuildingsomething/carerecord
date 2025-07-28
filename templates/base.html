@@ -15,52 +15,103 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <!-- Top Header -->
+    <header class="top-header bg-white border-bottom">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('dashboard') }}">
-                <i data-feather="heart" class="me-2"></i>Health Tracker
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="{{ url_for('dashboard') }}">
+                    <i data-feather="heart" class="me-2"></i>Health Tracker
+                </a>
+                <div class="header-actions">
+                    <button class="btn btn-outline-primary btn-sm me-2" onclick="window.print()">
+                        <i data-feather="printer" class="me-1"></i>Print Summary
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i data-feather="settings" class="me-1"></i>Settings
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('doctor_summary') }}">
+                                <i data-feather="file-text" class="me-2"></i>Doctor Summary
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="window.print()">
+                                <i data-feather="printer" class="me-2"></i>Print Current Page
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white main-nav">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav w-100">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('dashboard') }}">
                             <i data-feather="home" class="me-1"></i>Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('profile') }}">
-                            <i data-feather="user" class="me-1"></i>Profile
+                    
+                    <!-- Health Records Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i data-feather="heart" class="me-1"></i>Health Records
                         </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('profile') }}">
+                                    <i data-feather="user" class="me-2"></i>Profile & Conditions
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('medications') }}">
+                                    <i data-feather="package" class="me-2"></i>Medications
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('tests') }}">
+                                    <i data-feather="activity" class="me-2"></i>Tests & Lab Results
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('vitals') }}">
+                                    <i data-feather="trending-up" class="me-2"></i>Vital Signs
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('medications') }}">
-                            <i data-feather="package" class="me-1"></i>Medications
+                    
+                    <!-- Documents Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i data-feather="folder" class="me-1"></i>Documents
                         </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('documents') }}">
+                                    <i data-feather="file" class="me-2"></i>File Uploads
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('notebook') }}">
+                                    <i data-feather="book" class="me-2"></i>Health Notebook
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('tests') }}">
-                            <i data-feather="activity" class="me-1"></i>Tests
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('vitals') }}">
-                            <i data-feather="trending-up" class="me-1"></i>Vitals
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('documents') }}">
-                            <i data-feather="file" class="me-1"></i>Documents
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('notebook') }}">
-                            <i data-feather="book" class="me-1"></i>Notebook
+                    
+                    <!-- Quick Actions on Right -->
+                    <li class="nav-item ms-auto">
+                        <a class="nav-link btn-nav-action" href="{{ url_for('doctor_summary') }}">
+                            <i data-feather="printer" class="me-1"></i>Doctor Summary
                         </a>
                     </li>
                 </ul>
